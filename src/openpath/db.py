@@ -22,9 +22,18 @@ def init_db(db_path: str) -> sqlite3.Connection:
     return conn
 
 
+_ADDED_COLUMNS = {
+    "embeddings": [("dim", "INTEGER"), ("text_hash", "TEXT"), ("updated_at", "TEXT")],
+    "health": [("license_class", "TEXT"), ("commercial_use", "TEXT"), ("confidence", "TEXT"),
+               ("completeness", "REAL"), ("label", "TEXT")],
+}
+
+
 def _migrate(conn: sqlite3.Connection) -> None:
     """Bring databases created by older phases up to date."""
-    cols = {r["name"] for r in conn.execute("PRAGMA table_info(embeddings)")}
-    for name, ddl in (("dim", "INTEGER"), ("text_hash", "TEXT"), ("updated_at", "TEXT")):
-        if name not in cols:
-            conn.execute(f"ALTER TABLE embeddings ADD COLUMN {name} {ddl}")
+    for table, columns in _ADDED_COLUMNS.items():
+        existing = {r["name"] for r in conn.execute(f"PRAGMA table_info({table})")}
+        for name, ddl in columns:
+            if name not in existing:
+                conn.execute(f"ALTER TABLE {table} ADD COLUMN {name} {ddl}")
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_health_license_class ON health(license_class)")

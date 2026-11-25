@@ -39,6 +39,7 @@ class Filters:
     licenses: list[str] = field(default_factory=list)  # allowlist, case-insensitive
     require_license: bool = False                 # drop missing / NOASSERTION / 'other'
     max_age_months: Optional[int] = None
+    license_classes: list[str] = field(default_factory=list)  # needs `python -m openpath.scoring.health` first
 
 
 @dataclass
@@ -68,6 +69,9 @@ def build_where(f: Filters, now: datetime) -> tuple[str, list]:
     if f.licenses:
         c, v = _in("lower(p.license_spdx)", f.licenses)
         clauses.append(c); params += v
+    if f.license_classes:
+        c, v = _in("h.license_class", f.license_classes)
+        clauses.append(c); params += [x.lower() for x in v]
     if f.require_license:
         c, v = _in("lower(p.license_spdx)", list(UNCLEAR_LICENSES))
         clauses.append(f"p.license_spdx IS NOT NULL AND NOT ({c})"); params += v
@@ -102,8 +106,10 @@ class Searcher:
                now: Optional[datetime] = None) -> list[Hit]:
         where, params = build_where(filters or Filters(), now or datetime.now(timezone.utc))
         rows = self.conn.execute(
-            "SELECT p.*, e.vector AS _vec FROM projects p "
-            "JOIN embeddings e ON e.project_id = p.id AND e.model = ? "
+            "SELECT p.*, e.vector AS _vec, h.score_total AS health_score, h.label AS health_label, "
+            "h.license_class AS license_class, h.commercial_use AS commercial_use, h.confidence AS confidence "
+            "FROM projects p JOIN embeddings e ON e.project_id = p.id AND e.model = ? "
+            "LEFT JOIN health h ON h.project_id = p.id "
             f"WHERE {where}",
             [self.embedder.name, *params],
         ).fetchall()
@@ -130,8 +136,9 @@ def _print_hits(query: str, hits: list[Hit]) -> None:
     for h in hits:
         p = h.project
         desc = (p["description"] or "")[:70]
+        health = "n/a" if p["health_score"] is None else f"{p['health_score']:.0f}"
         print(f"   {h.score:.3f} (sem {h.semantic:.2f}, kw {h.keyword:.2f}) [{p['kind']}/{p['source']}] "
-              f"{p['source_id']} | {p['license_spdx'] or '?'} | {desc}")
+              f"{p['source_id']} | health {health} | {p['license_spdx'] or '?'} ({p['license_class'] or 'unscored'}) | {desc}")
 
 
 def main(argv: Optional[list[str]] = None) -> int:
@@ -144,6 +151,9 @@ def main(argv: Optional[list[str]] = None) -> int:
     p.add_argument("--language", action="append", default=[], help="software language (repeatable)")
     p.add_argument("--license", action="append", default=[], help="allowed license id (repeatable)")
     p.add_argument("--require-license", action="store_true")
+    p.add_argument("--license-class", action="append", default=[],
+                   choices=["permissive", "weak_copyleft", "strong_copyleft", "network_copyleft", "restricted_or_unknown"],
+                   help="allowed license class (repeatable; needs health scoring run first)")
     p.add_argument("--max-age-months", type=int)
     p.add_argument("--keyword-weight", type=float, default=0.15)
     p.add_argument("--embedder", default=None)
@@ -155,7 +165,8 @@ def main(argv: Optional[list[str]] = None) -> int:
     settings = get_settings()
     conn = init_db(args.db or settings.db_path)
     searcher = Searcher(conn, get_embedder(args.embedder or settings.embedder), args.keyword_weight)
-    filters = Filters(args.kind, args.source, args.language, args.license, args.require_license, args.max_age_months)
+    filters = Filters(args.kind, args.source, args.language, args.license, args.require_license, args.max_age_months,
+                      args.license_class)
     queries = [args.query] if args.query else []
     if args.queries_file:
         with open(args.queries_file, encoding="utf-8") as fh:

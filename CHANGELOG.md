@@ -59,4 +59,27 @@
 - tests/test_index.py: 20 tests (45 total passing). Real model never run in the sandbox (needs Hugging Face download).
 - Known gaps: license filters take exact ids; mapping to license classes (permissive etc.) comes in Phase 4
 
-## Next: Phase 4 (health score, license classes, confidence labels)
+## Phase 4 (code done; weights are judgment calls, review them on real data)
+- scoring/licenses.json + licenses.py: ~100 SPDX ids and Hugging Face slugs mapped to 5 classes
+  (permissive, weak_copyleft, strong_copyleft, network_copyleft, restricted_or_unknown), each with a commercial_use
+  value (yes / yes_with_conditions / no / unclear) and a plain-language note. classify() handles +, -only,
+  -or-later, WITH exceptions and simple OR (loosest wins) / AND (strictest wins) expressions. Anything not in
+  the table becomes restricted_or_unknown with known=False. license_fit(info, constraint, commercial_use)
+  returns (ok, plain-language reason) for Phase 6 rejection reasons. Informational only, not legal advice.
+- scoring/config.json + config.py: all weights, score curves, label thresholds, confidence settings (editable;
+  CLI accepts --config for experiments)
+- scoring/health.py: components recency 0.30, documentation 0.20, release cadence 0.15, contributor spread 0.15,
+  issue load 0.10, adoption 0.10. Total = weighted mean of components that have data. Models and datasets use
+  recency, documentation, adoption only. Every component stores value, plain-language detail and a link.
+  Missing release data is not punished. completeness = share of required components with data.
+- scoring/confidence.py: low_data (no activity date or completeness < 0.6) beats verified_live (verified within
+  24h, set by the Phase 6 verifier) beats cached (with 'data as of' date and a stale warning after 30 days)
+- health table gained license_class, commercial_use, confidence, completeness, label (auto-migrated);
+  CLI: python -m openpath.scoring.health [--rebuild] [--show owner/repo] [--config file.json]
+- Search: Filters.license_classes / --license-class; hits now carry health_score, health_label, license_class,
+  commercial_use, confidence (None until scoring has run)
+- tests: tests/test_licenses.py, tests/test_health.py (107 total passing)
+- Known gaps: no issue-response-time or bus-factor trend yet (Phase 16); thresholds are untested heuristics;
+  the license table is not exhaustive and not legally reviewed
+
+## Next: Phase 5 (interview agent, requirement profile, shareable link)

@@ -29,8 +29,13 @@ CREATE TABLE IF NOT EXISTS health (
     project_id   INTEGER PRIMARY KEY REFERENCES projects(id) ON DELETE CASCADE,
     score_total  REAL,
     components   TEXT,
-    evidence     TEXT,
-    computed_at  TEXT NOT NULL
+    evidence     TEXT,                         -- JSON list of facts and links
+    computed_at  TEXT NOT NULL,
+    license_class TEXT,
+    commercial_use TEXT,
+    confidence   TEXT,                         -- verified_live | cached | low_data
+    completeness REAL,
+    label        TEXT                          -- healthy | fair | weak | inactive
 );
 
 CREATE TABLE IF NOT EXISTS embeddings (

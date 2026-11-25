@@ -49,3 +49,15 @@ Re-running build only embeds new or changed projects.
 3. Aim for at least 3 relevant results in the top 5 for 7 of the 10 queries.
 4. Compare `--embedder hashing` with the default model. If the real model is not clearly better, something is wrong.
 5. Save your judgments: they become the labeled test set for Phase 9.
+
+## Phase 4: health, licenses, confidence
+```
+python -m openpath.scoring.health                       # score everything new or changed
+python -m openpath.scoring.health --show owner/repo     # full breakdown with evidence links
+python -m openpath.index.search "pdf text extraction" --license-class permissive --license-class weak_copyleft
+```
+Run the scoring step after each ingest. Weights and curves live in `src/openpath/scoring/config.json`;
+the license table is `src/openpath/scoring/licenses.json`. Add any license you see flagged as "not in our table".
+
+Sanity-check the scores on projects you know: the ones you consider well maintained should score
+healthy (75+) and abandoned ones weak or inactive. If not, adjust the config and rerun with `--rebuild`.

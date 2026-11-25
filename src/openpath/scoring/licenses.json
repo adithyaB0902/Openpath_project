@@ -1,0 +1,243 @@
+{
+ "_about": "License classification table. Keys are lowercase SPDX ids or Hugging Face license slugs. A value is a class name, or an object overriding class, commercial_use and note. Sources: SPDX license list (spdx.org/licenses), choosealicense.com, Hugging Face license slugs. Informational only, not legal advice. Add or correct entries as needed.",
+ "classes": {
+  "permissive": {
+   "label": "permissive",
+   "commercial_use": "yes",
+   "note": "Permissive: you can use it commercially, modify it, and keep your own code private. Usually you only need to keep the copyright notice."
+  },
+  "weak_copyleft": {
+   "label": "weak copyleft",
+   "commercial_use": "yes_with_conditions",
+   "note": "Weak copyleft: commercial use is fine, but changes to this project's own files must be shared under the same license. Your separate code can usually stay private."
+  },
+  "strong_copyleft": {
+   "label": "strong copyleft",
+   "commercial_use": "yes_with_conditions",
+   "note": "Strong copyleft: commercial use is allowed, but if you distribute software that includes it, the combined work generally must be released under the same license."
+  },
+  "network_copyleft": {
+   "label": "network copyleft",
+   "commercial_use": "yes_with_conditions",
+   "note": "Network copyleft: like strong copyleft, and it also applies when you offer the software to users over a network (SaaS). Often a problem for commercial products."
+  },
+  "restricted_or_unknown": {
+   "label": "restricted or unclear",
+   "commercial_use": "unclear",
+   "note": "Unclear or restricted: this license may limit commercial use or add special conditions. Read it before relying on the project."
+  }
+ },
+ "licenses": {
+  "mit": "permissive",
+  "mit-0": "permissive",
+  "apache-2.0": "permissive",
+  "bsd": "permissive",
+  "bsd-2-clause": "permissive",
+  "bsd-3-clause": "permissive",
+  "bsd-3-clause-clear": "permissive",
+  "isc": "permissive",
+  "0bsd": "permissive",
+  "unlicense": "permissive",
+  "cc0-1.0": "permissive",
+  "zlib": "permissive",
+  "wtfpl": "permissive",
+  "bsl-1.0": "permissive",
+  "cc-by-4.0": "permissive",
+  "cc-by-3.0": "permissive",
+  "cc-by-2.0": "permissive",
+  "python-2.0": "permissive",
+  "psf-2.0": "permissive",
+  "afl-3.0": "permissive",
+  "artistic-2.0": "permissive",
+  "ncsa": "permissive",
+  "postgresql": "permissive",
+  "upl-1.0": "permissive",
+  "ecl-2.0": "permissive",
+  "odc-by": "permissive",
+  "pddl": "permissive",
+  "cdla-permissive-1.0": "permissive",
+  "cdla-permissive-2.0": "permissive",
+  "mulanpsl-2.0": "permissive",
+  "curl": "permissive",
+  "libpng": "permissive",
+  "blueoak-1.0.0": "permissive",
+  "lgpl-2.0": "weak_copyleft",
+  "lgpl-2.1": "weak_copyleft",
+  "lgpl-3.0": "weak_copyleft",
+  "mpl-1.1": "weak_copyleft",
+  "mpl-2.0": "weak_copyleft",
+  "epl-1.0": "weak_copyleft",
+  "epl-2.0": "weak_copyleft",
+  "cddl-1.0": "weak_copyleft",
+  "cddl-1.1": "weak_copyleft",
+  "ms-rl": "weak_copyleft",
+  "gpl-2.0": "strong_copyleft",
+  "gpl-3.0": "strong_copyleft",
+  "cc-by-sa-3.0": "strong_copyleft",
+  "cc-by-sa-4.0": "strong_copyleft",
+  "odbl": "strong_copyleft",
+  "odbl-1.0": "strong_copyleft",
+  "agpl-1.0": "network_copyleft",
+  "agpl-3.0": "network_copyleft",
+  "sspl-1.0": {
+   "class": "network_copyleft",
+   "commercial_use": "yes_with_conditions",
+   "note": "Server Side Public License: not an OSI-approved open source license. If you offer the software as a service you must release your whole service stack under it. Usually unsuitable for commercial products."
+  },
+  "cc-by-nc-2.0": {
+   "class": "restricted_or_unknown",
+   "commercial_use": "no",
+   "note": "Non-commercial only: you cannot use it in a commercial product."
+  },
+  "cc-by-nc-3.0": {
+   "class": "restricted_or_unknown",
+   "commercial_use": "no",
+   "note": "Non-commercial only: you cannot use it in a commercial product."
+  },
+  "cc-by-nc-4.0": {
+   "class": "restricted_or_unknown",
+   "commercial_use": "no",
+   "note": "Non-commercial only: you cannot use it in a commercial product."
+  },
+  "cc-by-nc-sa-3.0": {
+   "class": "restricted_or_unknown",
+   "commercial_use": "no",
+   "note": "Non-commercial only: you cannot use it in a commercial product."
+  },
+  "cc-by-nc-sa-4.0": {
+   "class": "restricted_or_unknown",
+   "commercial_use": "no",
+   "note": "Non-commercial only: you cannot use it in a commercial product."
+  },
+  "cc-by-nc-nd-3.0": {
+   "class": "restricted_or_unknown",
+   "commercial_use": "no",
+   "note": "Non-commercial only: you cannot use it in a commercial product."
+  },
+  "cc-by-nc-nd-4.0": {
+   "class": "restricted_or_unknown",
+   "commercial_use": "no",
+   "note": "Non-commercial only: you cannot use it in a commercial product."
+  },
+  "cc-by-nd-4.0": {
+   "class": "restricted_or_unknown",
+   "commercial_use": "yes_with_conditions",
+   "note": "No derivatives: you may use it, but you may not share modified versions."
+  },
+  "bsl-1.1": {
+   "class": "restricted_or_unknown",
+   "commercial_use": "unclear",
+   "note": "Business Source License: source-available, not open source. Production or commercial use is limited until a set change date. Read the license grant."
+  },
+  "busl-1.1": {
+   "class": "restricted_or_unknown",
+   "commercial_use": "unclear",
+   "note": "Business Source License: source-available, not open source. Production or commercial use is limited until a set change date. Read the license grant."
+  },
+  "elastic-2.0": {
+   "class": "restricted_or_unknown",
+   "commercial_use": "yes_with_conditions",
+   "note": "Elastic License 2.0: source-available. Commercial use is allowed, but you may not offer it as a managed service or remove its license-key protections."
+  },
+  "fsl-1.1-mit": {
+   "class": "restricted_or_unknown",
+   "commercial_use": "yes_with_conditions",
+   "note": "Functional Source License: commercial use is allowed except for competing with the vendor, and it converts to an open license after two years."
+  },
+  "fsl-1.1-apache-2.0": {
+   "class": "restricted_or_unknown",
+   "commercial_use": "yes_with_conditions",
+   "note": "Functional Source License: commercial use is allowed except for competing with the vendor, and it converts to an open license after two years."
+  },
+  "llama2": {
+   "class": "restricted_or_unknown",
+   "commercial_use": "yes_with_conditions",
+   "note": "Custom Meta community license: commercial use is allowed under conditions, such as an acceptable use policy and, for very large companies, a separate license. Read it."
+  },
+  "llama3": {
+   "class": "restricted_or_unknown",
+   "commercial_use": "yes_with_conditions",
+   "note": "Custom Meta community license: commercial use is allowed under conditions, such as an acceptable use policy and, for very large companies, a separate license. Read it."
+  },
+  "llama3.1": {
+   "class": "restricted_or_unknown",
+   "commercial_use": "yes_with_conditions",
+   "note": "Custom Meta community license: commercial use is allowed under conditions, such as an acceptable use policy and, for very large companies, a separate license. Read it."
+  },
+  "llama3.2": {
+   "class": "restricted_or_unknown",
+   "commercial_use": "yes_with_conditions",
+   "note": "Custom Meta community license: commercial use is allowed under conditions, such as an acceptable use policy and, for very large companies, a separate license. Read it."
+  },
+  "llama3.3": {
+   "class": "restricted_or_unknown",
+   "commercial_use": "yes_with_conditions",
+   "note": "Custom Meta community license: commercial use is allowed under conditions, such as an acceptable use policy and, for very large companies, a separate license. Read it."
+  },
+  "llama4": {
+   "class": "restricted_or_unknown",
+   "commercial_use": "yes_with_conditions",
+   "note": "Custom Meta community license: commercial use is allowed under conditions, such as an acceptable use policy and, for very large companies, a separate license. Read it."
+  },
+  "gemma": {
+   "class": "restricted_or_unknown",
+   "commercial_use": "yes_with_conditions",
+   "note": "Google Gemma terms: use is allowed under its terms of use and prohibited-use policy. Read them before shipping a product."
+  },
+  "openrail": {
+   "class": "restricted_or_unknown",
+   "commercial_use": "yes_with_conditions",
+   "note": "Responsible-AI (OpenRAIL) license: commercial use is generally allowed, but you must follow use restrictions and pass them on to your users."
+  },
+  "openrail++": {
+   "class": "restricted_or_unknown",
+   "commercial_use": "yes_with_conditions",
+   "note": "Responsible-AI (OpenRAIL) license: commercial use is generally allowed, but you must follow use restrictions and pass them on to your users."
+  },
+  "openrail-m": {
+   "class": "restricted_or_unknown",
+   "commercial_use": "yes_with_conditions",
+   "note": "Responsible-AI (OpenRAIL) license: commercial use is generally allowed, but you must follow use restrictions and pass them on to your users."
+  },
+  "creativeml-openrail-m": {
+   "class": "restricted_or_unknown",
+   "commercial_use": "yes_with_conditions",
+   "note": "Responsible-AI (OpenRAIL) license: commercial use is generally allowed, but you must follow use restrictions and pass them on to your users."
+  },
+  "bigscience-openrail-m": {
+   "class": "restricted_or_unknown",
+   "commercial_use": "yes_with_conditions",
+   "note": "Responsible-AI (OpenRAIL) license: commercial use is generally allowed, but you must follow use restrictions and pass them on to your users."
+  },
+  "bigscience-bloom-rail-1.0": {
+   "class": "restricted_or_unknown",
+   "commercial_use": "yes_with_conditions",
+   "note": "Responsible-AI (OpenRAIL) license: commercial use is generally allowed, but you must follow use restrictions and pass them on to your users."
+  },
+  "bigcode-openrail-m": {
+   "class": "restricted_or_unknown",
+   "commercial_use": "yes_with_conditions",
+   "note": "Responsible-AI (OpenRAIL) license: commercial use is generally allowed, but you must follow use restrictions and pass them on to your users."
+  },
+  "other": {
+   "class": "restricted_or_unknown",
+   "commercial_use": "unclear",
+   "note": "A custom or unrecognized license. Read it before using the project."
+  },
+  "unknown": {
+   "class": "restricted_or_unknown",
+   "commercial_use": "unclear",
+   "note": "The license is unknown. Check with the authors before using the project."
+  },
+  "noassertion": {
+   "class": "restricted_or_unknown",
+   "commercial_use": "unclear",
+   "note": "A license file exists but could not be identified automatically. Read it before using the project."
+  },
+  "none": {
+   "class": "restricted_or_unknown",
+   "commercial_use": "unclear",
+   "note": "No license was detected. Without a license you generally have no permission to reuse the code, so check with the authors before using it."
+  }
+ }
+}

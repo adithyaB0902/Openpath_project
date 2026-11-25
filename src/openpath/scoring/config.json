@@ -1,0 +1,198 @@
+{
+ "_about": "Health score settings. Each component scores 0-100 by piecewise-linear interpolation over [value, score] points. The total is the weighted mean of the components that have data.",
+ "weights": {
+  "recency": 0.3,
+  "release_cadence": 0.15,
+  "issue_load": 0.1,
+  "contributor_spread": 0.15,
+  "documentation": 0.2,
+  "adoption": 0.1
+ },
+ "points": {
+  "recency_days": [
+   [
+    0,
+    100
+   ],
+   [
+    30,
+    100
+   ],
+   [
+    180,
+    75
+   ],
+   [
+    365,
+    50
+   ],
+   [
+    730,
+    15
+   ],
+   [
+    1460,
+    0
+   ]
+  ],
+  "release_days": [
+   [
+    0,
+    100
+   ],
+   [
+    90,
+    100
+   ],
+   [
+    365,
+    70
+   ],
+   [
+    730,
+    35
+   ],
+   [
+    1460,
+    10
+   ]
+  ],
+  "issues_per_star": [
+   [
+    0,
+    100
+   ],
+   [
+    0.01,
+    100
+   ],
+   [
+    0.05,
+    70
+   ],
+   [
+    0.1,
+    45
+   ],
+   [
+    0.25,
+    10
+   ],
+   [
+    0.5,
+    0
+   ]
+  ],
+  "contributors": [
+   [
+    1,
+    10
+   ],
+   [
+    2,
+    30
+   ],
+   [
+    5,
+    55
+   ],
+   [
+    10,
+    75
+   ],
+   [
+    25,
+    90
+   ],
+   [
+    50,
+    100
+   ]
+  ],
+  "readme_chars": [
+   [
+    0,
+    0
+   ],
+   [
+    200,
+    30
+   ],
+   [
+    1000,
+    70
+   ],
+   [
+    2500,
+    100
+   ]
+  ],
+  "stars": [
+   [
+    10,
+    20
+   ],
+   [
+    100,
+    50
+   ],
+   [
+    1000,
+    75
+   ],
+   [
+    10000,
+    95
+   ],
+   [
+    50000,
+    100
+   ]
+  ],
+  "downloads": [
+   [
+    100,
+    20
+   ],
+   [
+    1000,
+    45
+   ],
+   [
+    10000,
+    70
+   ],
+   [
+    100000,
+    90
+   ],
+   [
+    1000000,
+    100
+   ]
+  ]
+ },
+ "labels": [
+  [
+   75,
+   "healthy"
+  ],
+  [
+   50,
+   "fair"
+  ],
+  [
+   25,
+   "weak"
+  ],
+  [
+   0,
+   "inactive"
+  ]
+ ],
+ "confidence": {
+  "live_hours": 24,
+  "stale_days": 30,
+  "min_completeness": 0.6
+ }
+}
