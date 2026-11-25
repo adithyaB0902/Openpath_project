@@ -1,87 +1,86 @@
 # OpenPath
 
-Open source advisor that shows its work. See CHANGELOG.md for current status.
+An open source advisor that shows its work. Describe what you need in plain words, answer a few questions, and get a
+verified, explained shortlist of open source projects and models from GitHub and Hugging Face, with the reasons the
+close matches that were excluded did not make the list.
 
-## Setup
+Three modes share one engine: **Solve** (non-technical users), **Build** (developers), **Learn** (hands-on learners).
+
+## What makes it different
+- **Verified results only.** Every recommendation comes from an index of real projects and is re-checked against its
+  source right before it is shown. Nothing is invented by an LLM.
+- **Shows its work.** Health scores, license classes, and confidence labels all link to their evidence.
+- **Says why not.** The closest matches that were excluded come back with a plain-language reason for each.
+- **Works without an LLM.** The interview and explanations have built-in fallbacks; an LLM only improves wording.
+
+## Status
+Command-line version, phases 0-6 complete. The frontend (Phase 7) is next.
+
+| Phase | What | State |
+|---|---|---|
+| 0 | Scaffold, schema, requirement profile | done |
+| 1 | GitHub ingestion | done |
+| 2 | Hugging Face ingestion | done |
+| 3 | Embeddings and hybrid search | done |
+| 4 | Health score, license classes, confidence | done |
+| 5 | Interview, profile editing, share codes | done |
+| 6 | Ranking, live verification, explanations, why-not | done |
+| 7 | Streamlit frontend | next |
+| 8 | Starter kits and Learn mode | planned |
+| 9 | Evaluation and hardening | planned |
+| 10 | Deployment | planned |
+
+Tests use mocked services. The real GitHub and Hugging Face APIs, the embedding model, and LLM providers have not yet
+been exercised end to end, so run the quick start below and report anything odd. See `CHANGELOG.md` for details and
+known gaps per phase.
+
+## Quick start
 ```
 python -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
-pip install -e ".[dev]"
-cp .env.example .env             # then add your tokens
+source .venv/bin/activate            # Windows: .venv\Scripts\activate
+pip install -e ".[dev,embed]"        # "embed" installs sentence-transformers (downloads a model on first use)
+cp .env.example .env                 # Windows: copy .env.example .env, then add your tokens
 pytest
-python scripts/init_db.py
 ```
 
-## Phase 1: ingest from GitHub
+## Typical workflow
 ```
 python -m openpath.ingest.github --topics machine-learning,self-hosted --limit 500
-python -m openpath.ingest.github --topics rag --languages python --limit 200 --light
+python -m openpath.ingest.huggingface --tasks text-generation,text-classification --limit 500
+python -m openpath.index.build                       # embeddings (re-run only embeds what changed)
+python -m openpath.scoring.health                    # health scores and license classes
+python -m openpath.interview.cli --mode build --save # a few questions, prints a share code
+python -m openpath.rank.cli --code YOURCODE          # recommendations with explanations and "why not"
 ```
-- `--light` skips commits, releases and contributors (fewer API calls).
-- Authenticated limits: 5000 core requests/hour, 30 searches/minute. A full (non-light) repo costs about 4 requests,
-  so roughly 1000 repos per hour. The client waits automatically when limited; re-running is safe.
-- Check progress: `sqlite3 data/openpath.db "select count(*) from projects"`
+Useful extras:
+```
+python -m openpath.index.search "pdf text extraction" --kind software --language python --license-class permissive
+python -m openpath.scoring.health --show owner/repo  # full health breakdown with evidence links
+python -m openpath.rank.cli --need "pdf text extraction" --no-verify --no-llm   # quick offline test
+```
+Add `--light` to either ingest command for fewer API calls. Settings live in `.env` (see `.env.example`):
+GitHub and Hugging Face tokens, the embedder, and an optional interview LLM (Ollama, any OpenAI-compatible API, or Claude).
 
-## Phase 2: ingest from Hugging Face
+## Layout
 ```
-python -m openpath.ingest.huggingface --tasks text-generation,text-classification,summarization --limit 500
-python -m openpath.ingest.huggingface --tasks text-generation --limit 50 --light     # no card fetch
-python -m openpath.ingest.huggingface --no-models --datasets-filter task_categories:question-answering --limit 50
-```
-Query both sources together:
-```
-sqlite3 data/openpath.db "select source, kind, name, license_spdx, popularity from projects_unified order by popularity desc limit 20"
+src/openpath/
+  ingest/     github.py, huggingface.py, common.py     crawl sources into SQLite
+  index/      embedder.py, build.py, search.py         embeddings and hybrid search
+  scoring/    health.py, licenses.py, confidence.py    scores, license classes (data in *.json)
+  interview/  agent.py, fallback.py, llm.py, store.py  questions, profiles, share codes
+  rank/       ranker.py, rules.py, effort.py, verify.py, cli.py   (settings in config.json)
+  explain/    explain.py                               grounded fit explanations
+  ui/                                                  frontend (Phase 7)
+tests/        pytest suite
+data/         local database (git-ignored) and sample queries
 ```
 
-## Phase 3: embeddings and search
-```
-pip install -e ".[embed]"                        # real embeddings (downloads a ~90 MB model on first use)
-python -m openpath.index.build                   # or: --embedder hashing  (offline baseline)
-python -m openpath.index.search "self-hosted appointment reminders" -k 5
-python -m openpath.index.search "pdf text extraction" --kind software --language python --max-age-months 12 --license mit
-python -m openpath.index.search --queries-file data/sample_queries.txt -k 5
-```
-Re-running build only embeds new or changed projects.
+## Important caveats
+- Health weights, license mappings, and ranking weights are judgment calls. They live in JSON files so they can be tuned.
+- License information is general, not legal advice. Read the actual license before relying on a project.
+- Effort estimates come from documentation and popularity signals, not from testing an install.
+- Never commit `.env`. It is git-ignored; if a token ever leaks, revoke it and create a new one.
 
-### How to judge result quality
-1. Run the sample queries file above (after ingesting a few hundred projects per source).
-2. For each query, mark each of the top 5 as relevant or not.
-3. Aim for at least 3 relevant results in the top 5 for 7 of the 10 queries.
-4. Compare `--embedder hashing` with the default model. If the real model is not clearly better, something is wrong.
-5. Save your judgments: they become the labeled test set for Phase 9.
-
-## Phase 4: health, licenses, confidence
-```
-python -m openpath.scoring.health                       # score everything new or changed
-python -m openpath.scoring.health --show owner/repo     # full breakdown with evidence links
-python -m openpath.index.search "pdf text extraction" --license-class permissive --license-class weak_copyleft
-```
-Run the scoring step after each ingest. Weights and curves live in `src/openpath/scoring/config.json`;
-the license table is `src/openpath/scoring/licenses.json`. Add any license you see flagged as "not in our table".
-
-Sanity-check the scores on projects you know: the ones you consider well maintained should score
-healthy (75+) and abandoned ones weak or inactive. If not, adjust the config and rerun with `--rebuild`.
-
-## Phase 5: the interview
-```
-python -m openpath.interview.cli --mode solve --need "appointment reminders for my clinic" --no-llm --save
-python -m openpath.interview.cli --mode build --save        # uses the LLM set in .env, if any
-```
-It prints a plain-language summary and a share code. Without an LLM it uses the built-in questions.
-
-To use an LLM for smarter questions, set these in `.env`:
-- Local and free: install Ollama, run `ollama pull llama3.2`, then `OPENPATH_LLM=ollama`.
-- Any OpenAI-compatible API: `OPENPATH_LLM=openai`, plus `OPENPATH_LLM_BASE_URL`, `OPENPATH_LLM_MODEL`,
-  `OPENPATH_LLM_API_KEY`. Check the provider's current free-tier limits and terms first.
-- Claude API (paid): `OPENPATH_LLM=anthropic`, plus a model name and API key.
-If the model errors or returns something invalid, the interview carries on with the built-in questions.
-
-## Phase 6: recommendations
-```
-python -m openpath.rank.cli --code abcd2345                 # profile from the interview (live checks need your tokens)
-python -m openpath.rank.cli --need "pdf text extraction" --no-verify --no-llm     # quick offline test
-python -m openpath.rank.cli --code abcd2345 --json          # full structured output
-```
-Each result shows a match score, health, license, effort estimate, confidence label, why it fits, and what to watch out for.
-Below the results, "Why not these?" lists the closest matches that were excluded and the reason for each.
-Weights, thresholds and limits are in `src/openpath/rank/config.json`.
+## License
+No license has been chosen yet. Until one is added, others have no permission to reuse this code.
+Choose one (for example via GitHub's "Add file > Create new file > LICENSE" template picker) before sharing it.
