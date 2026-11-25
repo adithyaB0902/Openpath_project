@@ -2,30 +2,98 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "OpenPath requirement profile",
   "type": "object",
-  "required": ["mode", "need", "constraints", "preferences"],
+  "required": [
+    "mode",
+    "need",
+    "constraints",
+    "preferences"
+  ],
   "additionalProperties": false,
   "properties": {
-    "mode": {"enum": ["solve", "build", "learn"]},
-    "need": {"type": "string", "minLength": 3},
+    "mode": {
+      "enum": [
+        "solve",
+        "build",
+        "learn"
+      ]
+    },
+    "need": {
+      "type": "string",
+      "minLength": 3
+    },
     "constraints": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "license": {"enum": ["any", "permissive", "permissive-or-weak-copyleft", "copyleft-ok"]},
-        "commercial_use": {"type": "boolean"},
-        "hosting": {"enum": ["any", "self-hosted", "cloud", "local-only"]},
-        "budget": {"enum": ["free", "low", "flexible"]},
-        "skill_level": {"enum": ["beginner", "intermediate", "advanced"]},
-        "data_sensitivity": {"enum": ["low", "medium", "high"]}
+        "license": {
+          "enum": [
+            "any",
+            "permissive",
+            "permissive-or-weak-copyleft",
+            "copyleft-ok"
+          ]
+        },
+        "commercial_use": {
+          "type": "boolean"
+        },
+        "hosting": {
+          "enum": [
+            "any",
+            "self-hosted",
+            "cloud",
+            "local-only"
+          ]
+        },
+        "budget": {
+          "enum": [
+            "free",
+            "low",
+            "flexible"
+          ]
+        },
+        "skill_level": {
+          "enum": [
+            "beginner",
+            "intermediate",
+            "advanced"
+          ]
+        },
+        "data_sensitivity": {
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        "scale": {
+          "enum": [
+            "personal",
+            "team",
+            "production"
+          ]
+        }
       }
     },
     "preferences": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "languages": {"type": "array", "items": {"type": "string"}},
-        "min_activity": {"type": "string"},
-        "kind": {"enum": ["software", "model", "any"]}
+        "languages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "min_activity": {
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "software",
+            "model",
+            "any"
+          ]
+        }
       }
     }
   }

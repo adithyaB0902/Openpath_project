@@ -61,3 +61,17 @@ the license table is `src/openpath/scoring/licenses.json`. Add any license you s
 
 Sanity-check the scores on projects you know: the ones you consider well maintained should score
 healthy (75+) and abandoned ones weak or inactive. If not, adjust the config and rerun with `--rebuild`.
+
+## Phase 5: the interview
+```
+python -m openpath.interview.cli --mode solve --need "appointment reminders for my clinic" --no-llm --save
+python -m openpath.interview.cli --mode build --save        # uses the LLM set in .env, if any
+```
+It prints a plain-language summary and a share code. Without an LLM it uses the built-in questions.
+
+To use an LLM for smarter questions, set these in `.env`:
+- Local and free: install Ollama, run `ollama pull llama3.2`, then `OPENPATH_LLM=ollama`.
+- Any OpenAI-compatible API: `OPENPATH_LLM=openai`, plus `OPENPATH_LLM_BASE_URL`, `OPENPATH_LLM_MODEL`,
+  `OPENPATH_LLM_API_KEY`. Check the provider's current free-tier limits and terms first.
+- Claude API (paid): `OPENPATH_LLM=anthropic`, plus a model name and API key.
+If the model errors or returns something invalid, the interview carries on with the built-in questions.

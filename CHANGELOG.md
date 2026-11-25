@@ -82,4 +82,28 @@
 - Known gaps: no issue-response-time or bus-factor trend yet (Phase 16); thresholds are untested heuristics;
   the license table is not exhaustive and not legally reviewed
 
-## Next: Phase 5 (interview agent, requirement profile, shareable link)
+## Phase 5 (code done; real LLM providers untested live)
+- profile_schema.json: added constraints.scale (personal | team | production)
+- profile.py: sanitize_profile() (drops invalid optional fields, raises only for bad mode/need), apply_edits()
+  (dotted keys like 'constraints.hosting', None removes), editable_fields() (allowed values for an edit form),
+  profile_summary() (plain-language text the user can check)
+- config.py / .env.example: OPENPATH_LLM (none | ollama | openai | anthropic), _MODEL, _BASE_URL, _API_KEY
+- interview/llm.py: OllamaClient (local, free), OpenAICompatClient (any OpenAI-style API, retries without
+  response_format on HTTP 400), AnthropicClient (paid), ScriptedLLM (tests), get_llm(); errors never include the key
+- interview/agent.py: Interview.start(mode, need) / .answer(state, text) -> Turn(state, question, profile, done).
+  At most 5 questions. LLM output must be JSON that validates against the profile schema; retried once with the
+  validation errors; then falls back to the built-in flow (also on network errors). mode is enforced by us, not the
+  LLM; user text is passed as data with an explicit ignore-instructions rule. State is plain JSON (resumable).
+  The final answer is always integrated by one more LLM call, whose extra question is ignored.
+- interview/fallback.py: deterministic flows (solve 5 questions, build 5, learn 4) with suggested options;
+  answers match by number, label, or a unique substring; ambiguous or unclear answers are ignored, never guessed;
+  questions already answered are skipped
+- interview/store.py: save_profile() / load_profile() / share_url(); codes are 8 characters derived from the profile
+  content (same profile = same code), forgiving of case and o/0, i/l/1; collisions extend the code
+- interview/cli.py: python -m openpath.interview.cli --mode build [--need ...] [--no-llm] [--save]
+- tests: test_llm.py, test_profile_tools.py, test_interview.py (155 total passing); personas for all three modes
+  run both with and without an LLM
+- Known gaps: free-text answers are only understood by the LLM path (the built-in flow maps options and
+  languages); the edit form itself arrives with the UI in Phase 7; profiles are not yet fed into search (Phase 6)
+
+## Next: Phase 6 (ranker, live verifier, explainer, why-not)

@@ -12,6 +12,10 @@ class Settings:
     hf_token: str
     db_path: str
     embedder: str
+    llm_provider: str
+    llm_model: str
+    llm_base_url: str
+    llm_api_key: str
 
 
 def get_settings() -> Settings:
@@ -20,4 +24,8 @@ def get_settings() -> Settings:
         hf_token=os.getenv("HF_TOKEN", ""),
         db_path=os.getenv("OPENPATH_DB", "data/openpath.db"),
         embedder=os.getenv("OPENPATH_EMBEDDER", "sentence-transformers/all-MiniLM-L6-v2"),
+        llm_provider=os.getenv("OPENPATH_LLM", "none"),
+        llm_model=os.getenv("OPENPATH_LLM_MODEL", ""),
+        llm_base_url=os.getenv("OPENPATH_LLM_BASE_URL", ""),
+        llm_api_key=os.getenv("OPENPATH_LLM_API_KEY", ""),
     )
