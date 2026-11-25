@@ -13,13 +13,14 @@ import sqlite3
 import sys
 import time
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from typing import Any, Callable, Optional
 
 import requests
 
 from openpath.config import get_settings
 from openpath.db import init_db
+from openpath.ingest.common import is_fresh, upsert_project
 
 log = logging.getLogger("openpath.ingest.github")
 
@@ -292,34 +293,6 @@ def build_record(item: dict, extra: dict, fetched_at: str) -> dict:
     }
 
 
-def upsert_project(conn: sqlite3.Connection, rec: dict) -> None:
-    cols = list(rec)
-    placeholders = ", ".join(f":{c}" for c in cols)
-    keep_old = {"readme_excerpt", "contributors", "last_release_at"}
-    updates = ", ".join(
-        f"{c} = COALESCE(excluded.{c}, projects.{c})" if c in keep_old else f"{c} = excluded.{c}"
-        for c in cols
-        if c not in ("source", "source_id")
-    )
-    conn.execute(
-        f"INSERT INTO projects ({', '.join(cols)}) VALUES ({placeholders}) "
-        f"ON CONFLICT(source, source_id) DO UPDATE SET {updates}",
-        rec,
-    )
-    conn.commit()
-
-
-def _is_fresh(conn: sqlite3.Connection, full: str, max_age_days: int, now: datetime) -> bool:
-    if max_age_days <= 0:
-        return False
-    row = conn.execute(
-        "SELECT fetched_at FROM projects WHERE source = 'github' AND source_id = ?", (full,)
-    ).fetchone()
-    if not row:
-        return False
-    return datetime.fromisoformat(row["fetched_at"]) > now - timedelta(days=max_age_days)
-
-
 def ingest(
     conn: sqlite3.Connection,
     client: GitHubClient,
@@ -353,7 +326,7 @@ def ingest(
                     if full in seen:
                         continue
                     seen.add(full)
-                    if _is_fresh(conn, full, max_age_days, now_fn()):
+                    if is_fresh(conn, "github", full, max_age_days, now_fn()):
                         stats.skipped += 1
                         continue
                     try:

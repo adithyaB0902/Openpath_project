@@ -23,4 +23,22 @@
 - tests/test_github_ingest.py: 12 mocked tests (14 total passing)
 - Known gap: not yet verified against the live API (anonymous limit was exhausted in the build sandbox)
 
-## Next: Phase 2 (Hugging Face ingestion)
+## Phase 2 (code done, needs a live check with your token)
+- ingest/common.py: shared upsert_project and is_fresh (github.py refactored to use them)
+- schema.sql: added view projects_unified (popularity = stars for software, likes for models/datasets;
+  last_activity_at = last_commit_at, which holds last_modified for Hugging Face)
+- ingest/huggingface.py:
+  - Models per pipeline task (and optional datasets per filter), most downloaded first;
+    listing stops below --min-downloads; uses `expand` with automatic fallback to full=True
+  - Stores: license (HF slug, lowercase, e.g. apache-2.0 / llama3 / other: NOT always SPDX, Phase 4 must map it),
+    downloads (last 30 days), likes, parameter count (safetensors total), topics (pipeline tag, library, tags),
+    model card excerpt (front matter stripped, 3000 chars), description from first card paragraph
+  - Datasets stored with source_id 'datasets/<id>' so they never collide with a model of the same name
+  - HF rows have language = NULL (library goes into topics); stars/forks/issues/contributors = NULL
+  - Card fetch retries on 429/5xx; missing cards never abort an item; private/disabled repos skipped
+  - CLI: python -m openpath.ingest.huggingface --tasks text-generation --limit 500 [--light] [--datasets-filter ...]
+- Added dependency: huggingface_hub
+- tests/test_hf_ingest.py: 11 tests using real ModelInfo/DatasetInfo objects (25 total passing)
+- Known gap: not yet run against the live Hub (huggingface.co is not reachable from the build sandbox)
+
+## Next: Phase 3 (embeddings and hybrid retrieval)

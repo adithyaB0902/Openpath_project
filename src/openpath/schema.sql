@@ -65,3 +65,11 @@ CREATE TABLE IF NOT EXISTS http_cache (
     link       TEXT,
     fetched_at TEXT NOT NULL
 );
+
+-- One query surface across GitHub and Hugging Face.
+-- popularity: stars for software, likes for models/datasets (not directly comparable across sources).
+CREATE VIEW IF NOT EXISTS projects_unified AS
+SELECT id, source, source_id, kind, name, url, description, license_spdx, language, topics,
+       COALESCE(stars, likes) AS popularity, downloads, param_count,
+       last_commit_at AS last_activity_at, last_release_at, fetched_at
+FROM projects;
