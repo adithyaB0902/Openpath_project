@@ -7,4 +7,20 @@
 - profile_schema.json + profile.py: validate_profile(dict) -> list of error strings
 - Tests: tests/test_db.py, tests/test_profile.py
 
-## Next: Phase 1 (GitHub ingestion)
+
+## Phase 1 (code done, needs a live check with your token)
+- schema.sql: added http_cache table (ETag cache)
+- ingest/github.py:
+  - GitHubClient: ETag conditional requests (304 served from cache), rate-limit waits
+    (Retry-After / X-RateLimit-Reset / secondary limit), exponential backoff on 5xx and network errors,
+    search throttling (2.2s with token, 6.5s without)
+  - ingest(conn, client, topics, languages, limit, min_stars, max_age_days, light): upserts each repo
+    immediately (resumable); repos fetched within max_age_days are skipped and do not count toward limit
+  - Stored: description, README excerpt (3000 chars), SPDX license (raw, may be NOASSERTION), stars, forks,
+    open issues, contributors, last commit, last release, topics
+  - Optional fields failing (e.g. contributor list too large) never abort a repo
+  - CLI: python -m openpath.ingest.github --topics a,b --languages python --limit 500 [--light]
+- tests/test_github_ingest.py: 12 mocked tests (14 total passing)
+- Known gap: not yet verified against the live API (anonymous limit was exhausted in the build sandbox)
+
+## Next: Phase 2 (Hugging Face ingestion)

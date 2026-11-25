@@ -57,3 +57,11 @@ CREATE TABLE IF NOT EXISTS runs (
 CREATE INDEX IF NOT EXISTS idx_projects_license ON projects(license_spdx);
 CREATE INDEX IF NOT EXISTS idx_projects_language ON projects(language);
 CREATE INDEX IF NOT EXISTS idx_projects_kind ON projects(kind);
+
+CREATE TABLE IF NOT EXISTS http_cache (
+    cache_key  TEXT PRIMARY KEY,
+    etag       TEXT,
+    body       TEXT,
+    link       TEXT,
+    fetched_at TEXT NOT NULL
+);
