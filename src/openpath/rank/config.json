@@ -1,0 +1,32 @@
+{
+ "_about": "Ranking settings. Final score = 100 x weighted sum of four 0-1 components. Hard rules reject a candidate and record why.",
+ "weights": {
+  "semantic": 0.5,
+  "health": 0.25,
+  "license": 0.1,
+  "effort": 0.15
+ },
+ "k": 5,
+ "rejected_k": 5,
+ "pool_size": 100,
+ "verify_budget": 12,
+ "max_inactive_months": 24,
+ "max_inactive_months_model": 36,
+ "min_health": 25,
+ "license_class_scores": {
+  "permissive": 1.0,
+  "weak_copyleft": 0.85,
+  "strong_copyleft": 0.65,
+  "network_copyleft": 0.5,
+  "restricted_or_unknown": 0.3
+ },
+ "effort": {
+  "doc_weight": 0.6,
+  "adoption_weight": 0.4,
+  "big_model_params": 20000000000,
+  "big_model_penalty": 0.4,
+  "easy_at": 0.7,
+  "moderate_at": 0.4
+ },
+ "unknown_health_score": 0.4
+}

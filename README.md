@@ -75,3 +75,13 @@ To use an LLM for smarter questions, set these in `.env`:
   `OPENPATH_LLM_API_KEY`. Check the provider's current free-tier limits and terms first.
 - Claude API (paid): `OPENPATH_LLM=anthropic`, plus a model name and API key.
 If the model errors or returns something invalid, the interview carries on with the built-in questions.
+
+## Phase 6: recommendations
+```
+python -m openpath.rank.cli --code abcd2345                 # profile from the interview (live checks need your tokens)
+python -m openpath.rank.cli --need "pdf text extraction" --no-verify --no-llm     # quick offline test
+python -m openpath.rank.cli --code abcd2345 --json          # full structured output
+```
+Each result shows a match score, health, license, effort estimate, confidence label, why it fits, and what to watch out for.
+Below the results, "Why not these?" lists the closest matches that were excluded and the reason for each.
+Weights, thresholds and limits are in `src/openpath/rank/config.json`.

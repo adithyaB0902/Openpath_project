@@ -130,7 +130,7 @@ def compute_health(row: Any, now: Optional[datetime] = None, cfg: Optional[dict]
             put("contributor_spread", None, None, "Contributor count not available")
         else:
             risk = " (single maintainer: higher risk if they stop)" if n <= 1 else ""
-            put("contributor_spread", interp(n, pts["contributors"]), n, f"{n:,} contributors{risk}")
+            put("contributor_spread", interp(n, pts["contributors"]), n, f"{n:,} contributor{'' if n == 1 else 's'}{risk}")
 
     readme = _g(row, "readme_excerpt")
     chars = len(readme) if readme else 0

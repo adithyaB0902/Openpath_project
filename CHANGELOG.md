@@ -106,4 +106,32 @@
 - Known gaps: free-text answers are only understood by the LLM path (the built-in flow maps options and
   languages); the edit form itself arrives with the UI in Phase 7; profiles are not yet fed into search (Phase 6)
 
-## Next: Phase 6 (ranker, live verifier, explainer, why-not)
+## Phase 6 (code done; live verification untested against the real APIs; weights are judgment calls)
+- rank/config.json: weights semantic 0.50, health 0.25, license 0.10, effort 0.15; pool 100, k 5, rejected 5,
+  verify budget 12, inactivity limits (24 months software, 36 months models), minimum health 25
+- rank/rules.py: hard rejections, each with a plain-language reason: license (via license_fit), inactive
+  (min_activity preference such as 'last 6 months' overrides the default), low_health, language (aliases like js/py/golang;
+  unknown language is not held against a project). Hosting preference is NOT enforced (no data on it yet).
+- rank/effort.py: effort_fit (documentation 0.6 + adoption 0.4, minus a penalty for very large models when the user is
+  a beginner or wants local-only) and effort_card (easy / moderate / hard with the signals used). It is an estimate from
+  stored signals, not a test of the install; real install steps arrive with the Phase 8 starter kit
+- rank/verify.py: LiveVerifier re-checks GitHub (via GitHubClient, ETag-cached) and Hugging Face (model_info / dataset_info)
+  right before display. verified = data refreshed and stored, changes listed (license change, repo moved); gone / archived =
+  dropped with a reason; error = saved data shown, labelled cached. Activity dates never move backwards.
+- rank/ranker.py: rank(conn, profile, searcher, verifier=, llm=) -> RankResult(results, rejected, meta). Pipeline: retrieve a
+  pool (need + self-hosted + languages as the query) -> apply rules (reasons recorded) -> score -> verify in score order until
+  k results or the budget runs out (fresh data is re-checked against the rules and rescored) -> explain. Datasets are excluded
+  unless the profile asks for them. Deterministic ordering. assert_grounded() raises UngroundedResultError if any result was
+  not retrieved from the index. save_run() stores results and exclusions in the runs table.
+- explain/explain.py: template explanations always work. With an LLM, only 'why it fits' sentences may come from it, and each is
+  dropped if it contains a link, is over 300 characters, or contains a number not present in the supplied facts. Risk warnings
+  (copyleft or unclear license, missing data, single maintainer, thin docs, issue load, slow releases, large model, changes since
+  last crawl) always come from code.
+- rank/cli.py: python -m openpath.rank.cli --code CODE | --profile-file F | --need "..." [--no-verify] [--no-llm] [--save-run] [--json]
+- health detail now says '1 contributor' (singular)
+- tests: tests/test_rank.py, 48 tests (203 total passing)
+- Known gaps: the grounding check catches invented numbers and links but cannot catch an invented qualitative claim (for example
+  'supports OCR'); no de-duplication between a GitHub project and a Hugging Face model for the same thing; semantic scores are
+  normalized within the retrieved pool, so scores are relative to that search, not absolute
+
+## Next: Phase 7 (frontend)

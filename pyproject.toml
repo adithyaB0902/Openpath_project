@@ -19,6 +19,7 @@ where = ["src"]
 [tool.setuptools.package-data]
 openpath = ["*.sql", "*.json"]
 "openpath.scoring" = ["*.json"]
+"openpath.rank" = ["*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
