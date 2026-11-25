@@ -36,7 +36,10 @@ CREATE TABLE IF NOT EXISTS health (
 CREATE TABLE IF NOT EXISTS embeddings (
     project_id INTEGER PRIMARY KEY REFERENCES projects(id) ON DELETE CASCADE,
     model      TEXT NOT NULL,
-    vector     BLOB NOT NULL
+    vector     BLOB NOT NULL,          -- float32, L2-normalized
+    dim        INTEGER,
+    text_hash  TEXT,                   -- hash of the embedded text, to detect stale vectors
+    updated_at TEXT
 );
 
 CREATE TABLE IF NOT EXISTS profiles (

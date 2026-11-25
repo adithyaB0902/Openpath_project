@@ -17,5 +17,14 @@ def init_db(db_path: str) -> sqlite3.Connection:
     conn = connect(db_path)
     sql = resources.files("openpath").joinpath("schema.sql").read_text(encoding="utf-8")
     conn.executescript(sql)
+    _migrate(conn)
     conn.commit()
     return conn
+
+
+def _migrate(conn: sqlite3.Connection) -> None:
+    """Bring databases created by older phases up to date."""
+    cols = {r["name"] for r in conn.execute("PRAGMA table_info(embeddings)")}
+    for name, ddl in (("dim", "INTEGER"), ("text_hash", "TEXT"), ("updated_at", "TEXT")):
+        if name not in cols:
+            conn.execute(f"ALTER TABLE embeddings ADD COLUMN {name} {ddl}")

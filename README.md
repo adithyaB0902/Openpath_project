@@ -32,3 +32,20 @@ Query both sources together:
 ```
 sqlite3 data/openpath.db "select source, kind, name, license_spdx, popularity from projects_unified order by popularity desc limit 20"
 ```
+
+## Phase 3: embeddings and search
+```
+pip install -e ".[embed]"                        # real embeddings (downloads a ~90 MB model on first use)
+python -m openpath.index.build                   # or: --embedder hashing  (offline baseline)
+python -m openpath.index.search "self-hosted appointment reminders" -k 5
+python -m openpath.index.search "pdf text extraction" --kind software --language python --max-age-months 12 --license mit
+python -m openpath.index.search --queries-file data/sample_queries.txt -k 5
+```
+Re-running build only embeds new or changed projects.
+
+### How to judge result quality
+1. Run the sample queries file above (after ingesting a few hundred projects per source).
+2. For each query, mark each of the top 5 as relevant or not.
+3. Aim for at least 3 relevant results in the top 5 for 7 of the 10 queries.
+4. Compare `--embedder hashing` with the default model. If the real model is not clearly better, something is wrong.
+5. Save your judgments: they become the labeled test set for Phase 9.

@@ -7,10 +7,11 @@ name = "openpath"
 version = "0.1.0"
 description = "Open source advisor that shows its work"
 requires-python = ">=3.10"
-dependencies = ["python-dotenv>=1.0", "jsonschema>=4.0", "requests>=2.31", "huggingface_hub>=0.30"]
+dependencies = ["python-dotenv>=1.0", "jsonschema>=4.0", "requests>=2.31", "huggingface_hub>=0.30", "numpy>=1.24"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]
+embed = ["sentence-transformers>=3.0"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

@@ -41,4 +41,22 @@
 - tests/test_hf_ingest.py: 11 tests using real ModelInfo/DatasetInfo objects (25 total passing)
 - Known gap: not yet run against the live Hub (huggingface.co is not reachable from the build sandbox)
 
-## Next: Phase 3 (embeddings and hybrid retrieval)
+## Phase 3 (code done, needs a real-embedder check on your machine)
+- db.py: _migrate() adds dim, text_hash, updated_at to older embeddings tables (existing databases keep working)
+- config.py / .env.example: OPENPATH_EMBEDDER (default sentence-transformers/all-MiniLM-L6-v2; 'hashing' = offline baseline)
+- index/embedder.py: HashingEmbedder (offline, word overlap only), SentenceTransformerEmbedder (lazy import,
+  clear error if missing), get_embedder(name), tokenize() with stopwords and light plural stemming
+- index/build.py: project_text(), build_index() is incremental (new, changed text, or different embedder model only);
+  CLI: python -m openpath.index.build [--embedder X] [--rebuild]
+- index/search.py: Filters(kind, sources, languages, licenses, require_license, max_age_months) -> semantic cosine
+  + keyword boost (name 1.0 / topic 0.7 / description 0.4, weight 0.15); Searcher.search() returns Hit objects with
+  semantic, keyword and total scores; CLI: python -m openpath.index.search "query" [filters] / --queries-file
+- Filter semantics: language applies to software only (models pass through); max_age_months also drops unknown activity
+- Vector store: SQLite + numpy brute force (no Chroma). Synthetic benchmark, 5000 projects with the hashing
+  embedder: build 1.3 s, search about 80 ms. Revisit if the index grows beyond roughly 50k projects.
+- Optional install for real embeddings: pip install -e ".[embed]"
+- data/sample_queries.txt: 10 queries for the manual quality check
+- tests/test_index.py: 20 tests (45 total passing). Real model never run in the sandbox (needs Hugging Face download).
+- Known gaps: license filters take exact ids; mapping to license classes (permissive etc.) comes in Phase 4
+
+## Next: Phase 4 (health score, license classes, confidence labels)

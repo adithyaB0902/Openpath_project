@@ -1,0 +1,11 @@
+# Ten realistic requests used to eyeball retrieval quality (Phase 3 done-when check)
+extract text and tables from PDF documents
+self-hosted appointment reminders for a small clinic
+fine-tune a small language model on customer support chats
+open source alternative to Notion
+speech to text that runs offline
+lightweight vector database for RAG
+image classification model for mobile devices
+python library for web scraping
+self-hosted analytics dashboard
+beginner friendly machine learning project to learn

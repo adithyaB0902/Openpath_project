@@ -11,6 +11,7 @@ class Settings:
     github_token: str
     hf_token: str
     db_path: str
+    embedder: str
 
 
 def get_settings() -> Settings:
@@ -18,4 +19,5 @@ def get_settings() -> Settings:
         github_token=os.getenv("GITHUB_TOKEN", ""),
         hf_token=os.getenv("HF_TOKEN", ""),
         db_path=os.getenv("OPENPATH_DB", "data/openpath.db"),
+        embedder=os.getenv("OPENPATH_EMBEDDER", "sentence-transformers/all-MiniLM-L6-v2"),
     )
